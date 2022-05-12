@@ -500,21 +500,23 @@ async function listSignals() {
 
     var response
 
-    // if logged in once, fresh or not fresh, get the whole list
-    // if no token, then get the max number of rows defined in the api
-    if (!localStorage.access_token) {
-        // fetch and list items
-        response = await fetch(api_url_get_all_signals);
-    } else {
-        response = await fetch(api_url_get_all_signals, {
-            method: "GET",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.access_token,
-            },
-        });       
-    }
+    // list all signals if there is a valid fresh token
+
+    response = await fetch(api_url_get_all_signals, {
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.access_token,
+        },
+    });  
 
     signals_data = await response.json();
+
+    // If  invalid valid token (401 Unauthorized) or no token, retry without authorization header to list limited number of signals
+
+    if (response.status == 401 || !localStorage.access_token) {
+        response = await fetch(api_url_get_all_signals);
+        signals_data = await response.json();
+    }
 
     for (var key in signals_data.signals) {
         if (signals_data.signals.hasOwnProperty(key)) {
@@ -542,6 +544,8 @@ async function listSignals() {
             signallist.appendChild(li);     
         }
     }
+
+    // display a 'login to see all' message if not received the complete list
 
     if (!localStorage.access_token && signals_data.signals.length>=signals_data.notoken_limit){ login_txt.style.display = 'block'} else { login_txt.style.display = 'none'};
 
