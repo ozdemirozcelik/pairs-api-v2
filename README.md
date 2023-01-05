@@ -2,6 +2,9 @@
 
 Version 2 of the Flask-RESTful API.
 
+Check this repository for the latest release:
+https://github.com/ozdemirozcelik/pairs-api
+
 Built from the ground-up with Flask-RESTful & Flask-SQLAlchemy & Flask-JWT-Extended.
 Configured to be used with SQLite3 for local use.
 
